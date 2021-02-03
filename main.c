@@ -2,6 +2,7 @@
 #include <unistd.h>
 
 #include "encrypt.h"
+#include "read_pass.h"
 
 #define PASS_FILE "test.txt"
 #define TEMP "temp.txt"
@@ -14,10 +15,12 @@
 #define DECRYPT 0
 #endif
 
+// add user friendly error handeling from the return codes in encrypt.c
+
 int main(int argc, char **argv)
 {
     int opt;
-    FILE *FIN, *FOUT;
+    FILE *FIN, *FOUT, *fp;
 
     
     /*check if there is a existing password file
@@ -49,7 +52,9 @@ int main(int argc, char **argv)
         switch(opt)
         {
             case 's':
-                printf("show pass\n");
+                fp = fopen(PASS_FILE, "rb");
+                show_pass(fp, argv[2]);
+                fclose(fp);
                 break;
             case 'n':
                 printf("new password entry\n");
