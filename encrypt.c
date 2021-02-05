@@ -15,9 +15,7 @@
 #define TEMP_FILE "temp.txt"
 
 
-/**
- * Encrypt or decrypt, depending on flag 'crypt_status'
- */
+ //Encrypt or decrypt, depending on flag 'crypt_status'
 int f_crypt(int crypt_status, FILE *ifp, FILE *ofp, unsigned char *ckey, unsigned char *ivec)
 {
     //get size of file
@@ -79,7 +77,6 @@ int f_crypt(int crypt_status, FILE *ifp, FILE *ofp, unsigned char *ckey, unsigne
 int sha_pass(const char *password, unsigned char *hashed, unsigned int *shalen)
 {
     EVP_MD_CTX *context;
-
 
 	if((context = EVP_MD_CTX_new())==NULL){
         fprintf(stderr, "Error: EVP_MD_CTX_new\n");
