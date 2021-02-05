@@ -7,11 +7,9 @@
 #ifndef ENCRYPT
 #define ENCRYPT 1
 #endif
-
 #ifndef DECRYPT
 #define DECRYPT 0
 #endif
-
 
 #define PASS_FILE "test.txt"
 #define TEMP_FILE "temp.txt"
@@ -62,16 +60,15 @@ int f_crypt(int crypt_status, FILE *ifp, FILE *ofp, unsigned char *ckey, unsigne
         }
     }
     // Now cipher the final block and write it out.
-
     if(!EVP_CipherFinal_ex(ctx, cipher_buf, &outlen)){
         EVP_CIPHER_CTX_free(ctx);
         free(cipher_buf);
         free(read_buf);
         fprintf(stderr, "Error: EVP_CipherFinal\n");
-        return 1;
+        return 0;
     }
 
-    fwrite(cipher_buf, sizeof(unsigned char), outlen, ofp); //ofp
+    fwrite(cipher_buf, sizeof(unsigned char), outlen, ofp);
 
     // Free memory
     EVP_CIPHER_CTX_free(ctx);
@@ -79,4 +76,28 @@ int f_crypt(int crypt_status, FILE *ifp, FILE *ofp, unsigned char *ckey, unsigne
     free(read_buf);
     return 1;
 }
+int sha_pass(const char *password, unsigned char *hashed, unsigned int *shalen)
+{
+    EVP_MD_CTX *context;
 
+
+	if((context = EVP_MD_CTX_new())==NULL){
+        fprintf(stderr, "Error: EVP_MD_CTX_new\n");
+        return 0;
+    }
+	if(1 != EVP_DigestInit_ex(context, EVP_sha256(), NULL)){
+        fprintf(stderr, "Error: EVP_DigestInti_ex\n");
+        return 0;
+    }
+	if(1 != EVP_DigestUpdate(context, password, strlen(password))){
+        fprintf(stderr, "Error: EVP_DigestUpdate\n");
+        return 0;
+    }
+	if(1 != EVP_DigestFinal_ex(context, hashed, shalen)){
+        fprintf(stderr, "Error: EVP_DigestFinal_ex\n");
+        return 0;
+    }
+
+	EVP_MD_CTX_free(context);
+    return 1;
+}

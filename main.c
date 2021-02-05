@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <openssl/evp.h>
 
 #include "encrypt.h"
 #include "read_pass.h"
@@ -21,7 +22,8 @@ int main(int argc, char **argv)
 {
     int opt;
     FILE *FIN, *FOUT, *fp;
-
+    unsigned int shalen;
+    unsigned char ckey[EVP_MAX_MD_SIZE];
     
     /*check if there is a existing password file
       if there is not a password file is make a new one*/
@@ -44,9 +46,16 @@ int main(int argc, char **argv)
     }
     */
 
-    unsigned char ckey[] = "thiskeyisverybad";
+    const char pass[] = "thiskeyisverybad";
     unsigned char ivec[] = "dontusethisinput";
 
+    sha_pass(pass, ckey, &shalen);
+    /* print sha256 hash
+    int i;
+    for(i=0;i<shalen;i++)
+        printf("%02x", ckey[i]);
+    printf("\n");
+    */
 
     while((opt = getopt(argc, argv, "hsnde")) != -1)
         switch(opt)
