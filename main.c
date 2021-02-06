@@ -16,7 +16,14 @@
 #define DECRYPT 0
 #endif
 
-// add user friendly error handeling from the return codes in encrypt.c
+/*
+   run programm like this:
+   passwordmanager -n phone 1234    to add phone password entry
+   passwordmanager -s phone         to show phone password
+
+   then it asks for password to ensure you are allowed to run the program
+   the programm needs the password everytime to decrypt the file
+   */
 
 int main(int argc, char **argv)
 {
@@ -25,14 +32,15 @@ int main(int argc, char **argv)
     unsigned int shalen;
     unsigned char ckey[HASH_LEN];
     unsigned char ivec[HASH_LEN/4];
-    char pass[31];
-    char pass_verifier[31];
+    //char pass[31];
+    //char pass_verifier[31];
 
-    //const char pass[] = "thiskeyisverybad";
+    const char pass[] = "thiskeyisverybad";
     
     /*check if there is a existing password file
       if there is not a password file is make a new one*/
 
+    /*
     if((access(PASS_FILE, F_OK))== -1){
         printf("Password file not found\nMaking new file\n");
         FIN = fopen(PASS_FILE, "wb");
@@ -76,6 +84,7 @@ int main(int argc, char **argv)
     rename(TEMP, PASS_FILE);
 
     return 0;
+    */
 
     sha_pass(pass, ckey, &shalen);
     //fill ivec with first 16 bytes of password hash
@@ -91,7 +100,7 @@ int main(int argc, char **argv)
                 fclose(FIN);
                 break;
             case 'n':
-                printf("new password entry\n");
+                add_pass(argv[2], argv[3]);
                 break;
             case 'h':
                 printf("help\n");
