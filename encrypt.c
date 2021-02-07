@@ -4,15 +4,7 @@
 #include <openssl/evp.h>
 #include <openssl/aes.h>
 
-#ifndef ENCRYPT
-#define ENCRYPT 1
-#endif
-#ifndef DECRYPT
-#define DECRYPT 0
-#endif
-
-#define PASS_FILE "test.txt"
-#define TEMP_FILE "temp.txt"
+#include "main.h"
 
 
  //Encrypt or decrypt, depending on flag 'crypt_status'

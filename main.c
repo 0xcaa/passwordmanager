@@ -1,20 +1,12 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
+#include "main.h"
 #include "encrypt.h"
 #include "read_pass.h"
 
-#define PASS_FILE "test.txt"
-#define TEMP "temp.txt"
-#define HASH_LEN 64
-
-#ifndef ENCRYPT
-#define ENCRYPT 1
-#endif
-#ifndef DECRYPT
-#define DECRYPT 0
-#endif
 
 /*
    run programm like this:
@@ -96,11 +88,19 @@ int main(int argc, char **argv)
         {
             case 's':
                 FIN = fopen(PASS_FILE, "rb");
-                show_pass(FIN, argv[2]);
+                if(! (show_pass(FIN, argv[2])))
+                    fprintf(stderr, "Password entry not found\n");
                 fclose(FIN);
                 break;
             case 'n':
-                add_pass(argv[2], argv[3]);
+                FIN = fopen(PASS_FILE, "ab");
+                if('\0'==(add_pass(FIN, argv[2], argv[3]))){
+                    fprintf(stderr, "Entry %s already exists\n", argv[2]);
+                    fclose(FIN);
+                    exit(EXIT_FAILURE);
+                }
+
+                fclose(FIN);
                 break;
             case 'h':
                 printf("help\n");
