@@ -28,22 +28,13 @@ int main(int argc, char **argv)
     char pass[PASS_SIZE];
     char pass_v[PASS_SIZE];
 
-    //const char pass[] = "thiskeyisverybad";
 
-    /*
-    if(!(get_password(p))){
-        fprintf(stderr, "could not read password\n");
-        return EXIT_FAILURE;
-    }
-    printf("%s\n", p);
-    */
-    
     /*check if there is a existing password file
       if there is not a password file is make a new one*/
 
     if((access(PASS_FILE, F_OK))== -1){
         printf("Password file not found\nMaking new file\n");
-        FIN = fopen(PASS_FILE, "ab");
+        FIN = fopen(PASS_FILE, "wb");
         //fprintf(FIN, "####Password file####\n");
         fclose(FIN);
 
@@ -72,30 +63,17 @@ int main(int argc, char **argv)
 
         FIN = fopen(PASS_FILE, "rb");
         FOUT = fopen(TEMP_FILE, "wb");
+        //if decrypt fails its probably wrong password
+        // add out put to display wrong output, make sure what error message i get when wrong password
         if(!(f_crypt(DECRYPT, FIN, FOUT, ckey, ivec))){
             fprintf(stderr, "Error: crypt\n");
             return EXIT_FAILURE;
+        }
         fclose(FIN);
         fclose(FOUT);
         rename(TEMP_FILE, PASS_FILE);
-        }
+
     }
-    /*
-
-    FIN = fopen(PASS_FILE, "rb");
-    FOUT = fopen(TEMP, "wb");
-    f_crypt(DECRYPT, FIN, FOUT, ckey, ivec);
-    fclose(FIN);
-    fclose(FOUT);
-    rename(TEMP, PASS_FILE);
-
-    return 0;
-
-    sha_pass(pass, ckey, &shalen);
-    //fill ivec with first 16 bytes of password hash
-    for(i=0;i<shalen/2;i++)
-        ivec[i] = ckey[i];
-        */
 
     while((opt = getopt(argc, argv, "hsndqe")) != -1)
         switch(opt)
@@ -108,6 +86,7 @@ int main(int argc, char **argv)
                 break;
             case 'n':
                 FIN = fopen(PASS_FILE, "rb");
+
                 if(! (add_pass(FIN, argv[2], argv[3]))){
                     fprintf(stderr, "Entry %s already exists\n", argv[2]);
                     fclose(FIN);
@@ -142,6 +121,7 @@ int main(int argc, char **argv)
 
     FIN = fopen(PASS_FILE, "rb");
     FOUT = fopen(TEMP_FILE, "wb");
+    rewind(FIN);
     if(!(f_crypt(ENCRYPT, FIN, FOUT, ckey, ivec))){
         fprintf(stderr, "Error: crypt\n");
         return EXIT_FAILURE;
