@@ -7,19 +7,21 @@
 #include "main.h"
 #include "encrypt.h"
 #include "read_pass.h"
-
+#include "usage.h"
 
 /*
    run programm like this:
    passwordmanager -n phone 1234    to add phone password entry
    passwordmanager -s phone         to show phone password
-
-   then it asks for password to ensure you are allowed to run the program
-   the programm needs the password everytime to decrypt the file
    */
 
 int main(int argc, char **argv)
 {
+    if((argc<3)||(argc>4)){
+        usage(argv[0]);
+        return 1;
+    }
+
     int opt, i, status = 0;
     FILE *FIN, *FOUT;
     unsigned int shalen;
@@ -31,7 +33,6 @@ int main(int argc, char **argv)
 
     /*check if there is a existing password file
       if there is not a password file is make a new one*/
-
     if((access(PASS_FILE, F_OK))== -1){
         printf("Password file not found\nMaking new file\n");
         FIN = fopen(PASS_FILE, "wb");
@@ -63,10 +64,8 @@ int main(int argc, char **argv)
 
         FIN = fopen(PASS_FILE, "rb");
         FOUT = fopen(TEMP_FILE, "wb");
-        //if decrypt fails its probably wrong password
-        // add out put to display wrong output, make sure what error message i get when wrong password
         if(!(f_crypt(DECRYPT, FIN, FOUT, ckey, ivec))){
-            fprintf(stderr, "Error: crypt\n");
+            fprintf(stderr, "Wrong password or corrupt file\n");
             return EXIT_FAILURE;
         }
         fclose(FIN);
@@ -75,30 +74,37 @@ int main(int argc, char **argv)
 
     }
 
-    while((opt = getopt(argc, argv, "hsndqe")) != -1)
+    while((opt = getopt(argc, argv, "snd")) != -1)
         switch(opt)
         {
             case 's':
+                if(argc != 3){
+                    usage(argv[0]);
+                    break;
+                }
                 FIN = fopen(PASS_FILE, "rb");
                 if(! (show_pass(FIN, argv[2])))
                     fprintf(stderr, "Password entry not found\n");
                 fclose(FIN);
                 break;
             case 'n':
+                if(argc != 4){
+                    usage(argv[0]);
+                    break;
+                }
                 FIN = fopen(PASS_FILE, "rb");
-
                 if(! (add_pass(FIN, argv[2], argv[3]))){
                     fprintf(stderr, "Entry %s already exists\n", argv[2]);
                     fclose(FIN);
                     status = 1;
                 }
-
                 fclose(FIN);
                 break;
-            case 'h':
-                printf("help\n");
-                break;
             case 'd':
+                if(argc != 3){
+                    usage(argv[0]);
+                    break;
+                }
                 FIN = fopen(PASS_FILE, "rb");
                 if(! (delete_pass(FIN, argv[2]))){
                     fprintf(stderr, "Error: entry %s does not exist\n", argv[2]);
@@ -107,10 +113,8 @@ int main(int argc, char **argv)
                 else
                     fprintf(stdout, "Deleted %s\n", argv[2]);
                break;
-            case 'e':
-               break;
         default:
-            printf("default\n");
+               usage(argv[0]);
             return 1;
         }
 
