@@ -77,3 +77,14 @@ int delete_pass(FILE *fp, char *desc)
 
     return found;
 }
+
+int show_all(FILE *fp)
+{
+
+    //function to dump all contents of file
+    printf("all\n");
+    return 1;
+
+
+
+}

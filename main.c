@@ -17,7 +17,7 @@
 
 int main(int argc, char **argv)
 {
-    if((argc<3)||(argc>4)){
+    if((argc<2)||(argc>4)){
         usage(argv[0]);
         return 1;
     }
@@ -66,6 +66,7 @@ int main(int argc, char **argv)
         FOUT = fopen(TEMP_FILE, "wb");
         if(!(f_crypt(DECRYPT, FIN, FOUT, ckey, ivec))){
             fprintf(stderr, "Wrong password or corrupt file\n");
+            rename(TEMP_FILE, PASS_FILE); //?????????????
             return EXIT_FAILURE;
         }
         fclose(FIN);
@@ -74,7 +75,7 @@ int main(int argc, char **argv)
 
     }
 
-    while((opt = getopt(argc, argv, "snd")) != -1)
+    while((opt = getopt(argc, argv, "snda")) != -1)
         switch(opt)
         {
             case 's':
@@ -112,6 +113,18 @@ int main(int argc, char **argv)
                 }
                 else
                     fprintf(stdout, "Deleted %s\n", argv[2]);
+               break;
+           case 'a':
+               if(argc != 2){
+                   fprintf(stderr, "too many arguments\n");
+                   usage(argv[0]);
+               }
+               FIN = fopen(PASS_FILE, "rb");
+               if(! (show_all(FIN))){
+                   fprintf(stderr, "show all error\n");
+                   status = 1;
+               }
+               fclose(FIN);
                break;
         default:
                usage(argv[0]);
