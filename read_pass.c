@@ -80,11 +80,10 @@ int delete_pass(FILE *fp, char *desc)
 
 int show_all(FILE *fp)
 {
+    char line[MAX_LEN];
+    while(fgets(line, sizeof line, fp)!= NULL)
+        printf("%s", line);
 
-    //function to dump all contents of file
-    printf("all\n");
     return 1;
-
-
 
 }

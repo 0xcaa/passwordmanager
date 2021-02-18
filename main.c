@@ -9,11 +9,7 @@
 #include "read_pass.h"
 #include "usage.h"
 
-/*
-   run programm like this:
-   passwordmanager -n phone 1234    to add phone password entry
-   passwordmanager -s phone         to show phone password
-   */
+//fix password verification on making new file
 
 int main(int argc, char **argv)
 {
@@ -66,7 +62,7 @@ int main(int argc, char **argv)
         FOUT = fopen(TEMP_FILE, "wb");
         if(!(f_crypt(DECRYPT, FIN, FOUT, ckey, ivec))){
             fprintf(stderr, "Wrong password or corrupt file\n");
-            rename(TEMP_FILE, PASS_FILE); //?????????????
+            remove(TEMP_FILE);
             return EXIT_FAILURE;
         }
         fclose(FIN);
@@ -118,6 +114,7 @@ int main(int argc, char **argv)
                if(argc != 2){
                    fprintf(stderr, "too many arguments\n");
                    usage(argv[0]);
+                   break;
                }
                FIN = fopen(PASS_FILE, "rb");
                if(! (show_all(FIN))){
