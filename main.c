@@ -9,7 +9,6 @@
 #include "read_pass.h"
 #include "usage.h"
 
-//fix password verification on making new file
 
 int main(int argc, char **argv)
 {
@@ -38,11 +37,17 @@ int main(int argc, char **argv)
         // prompt user for password to use for encryption key
         if(!(get_password(pass))){
             fprintf(stderr, "Error: Password cannot be 0 and cant exeed 30 characters\n");
+            remove(PASS_FILE);
             return -1;
         }
 
         printf("enter password again\n");
-        if(get_password(pass_v)=='\0' && strcmp(pass, pass_v)!='\0'){
+        if(!(get_password(pass_v))){
+            fprintf(stderr, "Error: Password cannot be 0 and cant exeed 30 characters\n");
+            return -1;
+        }
+        if(strcmp(pass, pass_v) !='\0'){
+            remove(PASS_FILE);
             fprintf(stderr, "Error: Passwords does not match\n");
             return -1;
         }
@@ -68,7 +73,6 @@ int main(int argc, char **argv)
         fclose(FIN);
         fclose(FOUT);
         rename(TEMP_FILE, PASS_FILE);
-
     }
 
     while((opt = getopt(argc, argv, "snda")) != -1)
@@ -175,3 +179,4 @@ int get_password(char *password)
 
     return 1;
 }
+
